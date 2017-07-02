@@ -2,9 +2,9 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-raw_data = [
+raw_events = [
     {
-        'city': 'Москва',
+        'city': 'moscow',
         'title': 'Премия МУЗтв',
         'date': {
             'from': "12/12/2017",
@@ -26,7 +26,7 @@ raw_data = [
         'url': "http://..."
     },
     {
-        'city': 'Санкт-Петербург',
+        'city': 'saint-petersburg',
         'title': 'Выставка',
         'date': {
             'from': "11/11/2017",
@@ -49,20 +49,42 @@ raw_data = [
     }
 ]
 
+
 @app.route('/')
 def main_page():
-    data = raw_data
+    events = raw_events
     city = request.args.get('city')
     category = request.args.get('category')
     if city:
-        data = [element for element in data if element.get('city').lower() == city.lower()]
+        events = get_filtered_data_by_city(events, city)
     if category:
-        data = [element for element in data if element.get('category').lower() == category.lower()]
-    return render_template("main_page.html", data=data)
+        events = get_filtered_data_by_category(events, category)
+    return render_template("index.html", data=events)
+
+
+def get_filtered_data_by_category(raw_events, category):
+    return [event for event in raw_events if event.get('category', '').lower() == category]
+
+
+def get_filtered_data_by_city(raw_events, city):
+    return [event for event in raw_events if event.get('city', '').lower() == city.lower()]
 
 
 @app.route('/concerts')
-def display_concerts():
-    data = raw_data
-    data = [element for element in data if element.get('category').lower() == 'concert']
-    return render_template("main_page.html", data=data)
+def concerts():
+    return render_template("index.html", data=get_filtered_data_by_category(raw_events, 'concert'))
+
+
+@app.route('/movies')
+def cinema():
+    return render_template("index.html", data=get_filtered_data_by_category(raw_events, 'movies'))
+
+
+@app.route('/theatres')
+def theatres():
+    return render_template("index.html", data=get_filtered_data_by_category(raw_events, 'theatres'))
+
+
+@app.route('/exhibition')
+def exhibition():
+    return render_template("index.html", data=get_filtered_data_by_category(raw_events, 'exhibition'))

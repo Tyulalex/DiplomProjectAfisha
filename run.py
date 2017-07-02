@@ -1,4 +1,4 @@
-from app.flaskr.flaskr import app
+from app.server.server import app
 
 
 if __name__ == '__main__':
