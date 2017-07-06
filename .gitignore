@@ -1,3 +1,6 @@
 venv/
 .idea/
 __pycache__/
+parser/parser.py
+parser/ramblerkassa/old_film_parser.py
+parser/ramblerkassa/test.py
