@@ -48,13 +48,15 @@ def get_beautifulsoup(url):
 
 
 def fetch_film_info(bs):
-    page_movie = bs.find('div',class_="width page_movie" )
-    film_name_ru = bs.find('h1', itemprop="name")
-    film_name_en = bs.find('h2', class_='item_title2')
-    film_desciption = bs.find('span', class_="item_desc__text item_desc__text-full")
-    if film_desciption == None:
-        film_desciption =  bs.find('span', class_="item_desc__text")
-    return  film_name_ru.text, film_name_en.text.strip(), film_desciption.text.strip()
+    film_name_ru = bs.find('h1', itemprop="name").text
+    film_name_en = bs.find('h2', class_='item_title2').text
+    film_genre = bs.find('h3', class_="item_title3").text.split()[:-1]
+    film_age_limit = bs.find('h3', class_="item_title3").text.split()[-1]
+    if bs.find('span', class_="item_desc__text item_desc__text-full"):
+        film_desciption = bs.find('span', class_="item_desc__text item_desc__text-full").text
+    else:
+        film_desciption = bs.find('span', class_="item_desc__text").text
+    return film_name_ru, film_name_en, film_genre, film_age_limit, film_desciption
 
 
 def get_session_time_and_price(session_html):
