@@ -47,7 +47,7 @@ def get_beautifulsoup(url):
     return BeautifulSoup(html,'html.parser')
 
 
-def fetch_film_info(bs):
+def fetch_film_info_first(bs):
     film_name_ru = bs.find('h1', itemprop="name").text
     film_name_en = bs.find('h2', class_='item_title2').text
     film_genre = bs.find('h3', class_="item_title3").text.split()[:-1]
@@ -98,5 +98,5 @@ if __name__ == '__main__':
         next_elements += 24
     for url in films_url[:1]:
         bs = get_beautifulsoup(url)
-        print(fetch_film_info(bs))
+        print(fetch_film_info_first(bs))
         print(fetch_cinema_info(bs))
