@@ -93,8 +93,9 @@ def fetch_perfomance_date_and_theatre_info(bs):
             'theatre name': theatre_name,
             'theatre url': raw_theatre_url.get('href') if raw_theatre_url else None,
             'theatre adress': raw_theatre_adress.text if raw_theatre_adress else None,
-            'underground station': raw_underground_station.text if raw_underground_station else None
-        }, perfomances_date
+            'underground station': raw_underground_station.text if raw_underground_station else None,
+            'perfomance date': perfomances_date
+        }
 
 
 if __name__ == '__main__':
