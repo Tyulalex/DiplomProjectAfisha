@@ -1,7 +1,9 @@
-import requests, copy, json
+import json
+
+import requests
 from bs4 import BeautifulSoup
 
-from fetch_film_info import *
+from films_info_fetch import *
 
 
 def fetch_content(url, params=None):
@@ -13,27 +15,27 @@ def fetch_content(url, params=None):
         print(e)
 
 
-def fetch_json(next_elements):
+def fetch_json(skip):
     url = 'https://kassa.rambler.ru/creationsblock/17'
     params = {
                 'currenttab': 'Cinemas',
-                'skip': next_elements
+                'skip': skip
         }
     raw_data = fetch_content(url, params)
     if raw_data:
         return json.loads(raw_data)
 
 
-def fetch_number_of_films_and_urls(next_elements=0):
-    raw_data = fetch_json(next_elements)
+def fetch_number_of_films_and_urls(skip=0):
+    raw_data = fetch_json(skip)
     films_url = []
     html = raw_data['list']
     bs = BeautifulSoup(html, 'html.parser')
     for item in bs.find_all('span', itemprop='url'):
         films_url.append(item.find('a').get('href'))
     number_of_films = raw_data['nextbutton']['text']
-    next_elements = 24
-    return int(number_of_films.split()[-1]), films_url, next_elements
+    skip = 24
+    return int(number_of_films.split()[-1]), films_url, skip
 
 
 def fetch_film_info(bs):
@@ -85,10 +87,10 @@ def fetch_cinema_info(bs):
 
 
 if __name__ == '__main__':
-    number_of_films, films_url, next_elements = fetch_number_of_films_and_urls()
-    while next_elements < number_of_films:
-        films_url += fetch_number_of_films_and_urls(next_elements)[1]
-        next_elements += 24
+    number_of_films, films_url, skip = fetch_number_of_films_and_urls()
+    while skip < number_of_films:
+        films_url += fetch_number_of_films_and_urls(skip)[1]
+        skip += 24
     for url in films_url[:1]:
         html = fetch_content(url, params=False)
         bs = BeautifulSoup(html,'html.parser')
