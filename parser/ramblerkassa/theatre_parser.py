@@ -103,9 +103,8 @@ if __name__ == '__main__':
     while skip < number_of_perfomances:
         perfomances_url += fetch_number_of_perfomances_and_urls(skip)[1]
         skip += 18
-    for url in perfomances_url[:2]:
-        print(url)
+    for url in perfomances_url[:2]:        
         html = fetch_content(url)
         bs = BeautifulSoup(html,'html.parser')
-        # print(fetch_perfomance_info(bs))
+        print(fetch_perfomance_info(bs))
         print(fetch_perfomance_date_and_theatre_info(bs))
