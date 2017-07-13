@@ -91,7 +91,30 @@ def fetch_cinema_info(bs):
     return cinema_info_list
 
 
-#for perfomances----------------------------------------------------------------
+#only for concerts and theatres-------------------------------------------------
+
+
+def fetch_events_date_and_place_info(bs):
+    raw_data = bs.find('div', class_="rasp_names")
+    if raw_data:
+        place = raw_data.find('span', class_="s-name").text
+        raw_place_url = raw_data.find('a')
+        raw_data = raw_data.find('div', class_="rasp_name3 s-place")
+        raw_place_adress = raw_data.find('span')
+        raw_underground_station = raw_data.find('div', class_="rasp_place_metro")
+        event_date = []
+        for raw in bs.find_all('div', class_='rasp_item'):
+            event_date.append(raw.find('div', class_="rasp_date").text)
+        return {
+            'place': place,
+            'place url': raw_place_url.get('href') if raw_place_url else None,
+            'place adress': raw_place_adress.text if raw_place_adress else None,
+            'underground station': raw_underground_station.text if raw_underground_station else None,
+            'event date': event_date
+        }
+
+
+#for theatres----------------------------------------------------------------
 
 
 def fetch_perfomance_info(bs):

@@ -3,6 +3,8 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
+import special_function
+
 
 def get_url_params(event):
     event_city = {
@@ -53,24 +55,24 @@ def fetch_number_of_events_and_urls(skip, event):
     return int(number_of_events.split()[-1]), events_url, skip
 
 
-#only for concerts and theatres-------------------------------------------------
+def get_events_url_list(event):
+    number_of_events, events_url, skip = fetch_number_of_events_and_urls(0, event)
+    while skip < number_of_events:
+        events_url += fetch_number_of_events_and_urls(skip, event)[1]
+        if event == 'theatres':
+            skip += 18
+        else:
+            skip +=24
+    return events_url
 
-
-def fetch_events_date_and_place_info(bs):
-    raw_data = bs.find('div', class_="rasp_names")
-    if raw_data:
-        place = raw_data.find('span', class_="s-name").text
-        raw_place_url = raw_data.find('a')
-        raw_data = raw_data.find('div', class_="rasp_name3 s-place")
-        raw_place_adress = raw_data.find('span')
-        raw_underground_station = raw_data.find('div', class_="rasp_place_metro")
-        event_date = []
-        for raw in bs.find_all('div', class_='rasp_item'):
-            event_date.append(raw.find('div', class_="rasp_date").text)
-        return {
-            'place': place,
-            'place url': raw_place_url.get('href') if raw_place_url else None,
-            'place adress': raw_place_adress.text if raw_place_adress else None,
-            'underground station': raw_underground_station.text if raw_underground_station else None,
-            'event date': event_date
-        }
+def get_events_info(event):
+    events_url = get_events_url_list(event)
+    for url in events_url[:1]:
+        html = fetch_content(url)
+        bs = BeautifulSoup(html,'html.parser')
+        if event == 'films':
+            return  special_function.fetch_film_info(bs), special_function.fetch_cinema_info(bs)
+        elif event == 'theatres':
+            return special_function.fetch_perfomance_info(bs), special_function.fetch_events_date_and_place_info(bs)
+        else:
+            return special_function.fetch_concert_info(bs), special_function.fetch_events_date_and_place_info(bs)
