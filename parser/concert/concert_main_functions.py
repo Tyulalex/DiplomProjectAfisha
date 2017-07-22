@@ -85,7 +85,7 @@ def fetch_all_events_info(action_type_id):
     urls = get_events_url_list(action_type_id)
     events_info_list = []
     for url in urls:
-        htlm = fetch_content(url)
+        html = fetch_content(url)
         bs = BeautifulSoup(html, 'html.parser')
         events_info_list.append(fetch_event_info(bs))
     return events_info_list
