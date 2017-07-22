@@ -71,8 +71,10 @@ def fetch_event_genre_and_description(bs):
 def fetch_event_info(bs):
     header_html = fetch_event_header(bs)
     other_info_html =  fetch_event_genre_and_description(bs)
+    date_html = fetch_event_date(bs)
     return {
         'event title': header_html[0].text.strip(),
+        'event date': date_html.text if date_html else None,
         'age limit': header_html[1].text.strip() if header_html[1] else None,
         'place': header_html[2].text if header_html[2] else None,
         'adress': header_html[3].text if header_html[3] else None,
