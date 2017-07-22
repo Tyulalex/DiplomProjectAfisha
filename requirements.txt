@@ -1,4 +1,9 @@
 SQLAlchemy==1.1.11
+<<<<<<< HEAD
 Flask==0.12.2
 requests==2.18.1
 beautifulsoup4==4.6.0
+=======
+requests==2.18.1
+Flask-Migrate==2.0.4
+>>>>>>> master

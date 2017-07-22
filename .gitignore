@@ -7,3 +7,4 @@ parser/ramblerkassa/old_film_parser.py
 parser/ramblerkassa/test.py
 parser/ramblerkassa/params.py
 parser/concert/test.py
+*.db
