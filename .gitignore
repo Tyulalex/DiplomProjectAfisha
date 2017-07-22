@@ -1,5 +1,10 @@
 venv/
 .idea/
 __pycache__/
-migrations
+parser/ramblerkassa/__pycache__/
+parser/parser.py
+parser/ramblerkassa/old_film_parser.py
+parser/ramblerkassa/test.py
+parser/ramblerkassa/params.py
+parser/concert/test.py
 *.db
