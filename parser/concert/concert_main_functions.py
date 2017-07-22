@@ -1,0 +1,91 @@
+import requests
+from bs4 import BeautifulSoup
+
+
+def fetch_content(url, params=None):
+    try:
+        result = requests.get(url, params=params)
+        result.raise_for_status()
+        return result.text
+    except (requests.exceptions.HTTPError,
+            requests.exceptions.ConnectionError) as e:
+        print(e)
+
+
+def get_number_of_events_and_urls(action_type_id=None, page=1):
+    url = 'http://concert.ru/Home/Events'
+    params = {
+                'Page': page,
+                'ActionTypeID': action_type_id
+             }
+    events_url = []
+    raw_number = []
+    html = fetch_content(url, params)
+    bs = BeautifulSoup(html, 'html.parser')
+    raw_data = bs.find('div', class_='pagination')
+    for raw in raw_data.find_all('span'):
+        raw_number.append(raw.text)
+    for raw_data in bs.find_all('div', class_="event event_horizontal"):
+        events_url.append('http://concert.ru' + \
+                          raw_data.find('a', class_="event__name").get('href'))
+    current_page = page
+    return raw_number[0].split('-')[-1], events_url, raw_number[1], current_page
+
+
+def get_events_url_list(action_type_id):
+    current_events, events_url_list, number_of_events,\
+    current_page = get_number_of_events_and_urls(action_type_id)
+    events_url_lists = []
+    while current_events < number_of_events:
+        current_page += 1
+        events_url_lists += events_url_list
+        current_events,\
+        events_url_list = get_number_of_events_and_urls(action_type_id,
+                                                        current_page)[0:2]
+        print(current_events, number_of_events)
+    return events_url_lists
+
+
+def fetch_event_header(bs):
+    raw_data = bs.find('div', class_="eventHeader")
+    if raw_data:
+        return (raw_data.find('h2', class_="eventHeader__title"),
+                raw_data.find('div', class_="eventHeader__age"),
+                raw_data.find('div', class_="eventHeader__hall"),
+                raw_data.find('div', class_="eventHeader__address"))
+
+
+def fetch_event_date(bs):
+    raw_data = bs.find('div', class_="eventTabs")
+    if raw_data:
+        return raw_data.find('span', class_="eventTabs__tableDate")
+
+
+def fetch_event_genre_and_description(bs):
+    raw_data = bs.find('div', class_="eventInfo")
+    if raw_data:
+        return (raw_data.find('h2', class_="eventInfo__title"),
+               raw_data.find('div', class_="eventInfo__body"))
+
+
+def fetch_event_info(bs):
+    header_html = fetch_event_header(bs)
+    other_info_html =  fetch_event_genre_and_description(bs)
+    return {
+        'event title': header_html[0].text.strip(),
+        'age limit': header_html[1].text.strip() if header_html[1] else None,
+        'place': header_html[2].text if header_html[2] else None,
+        'adress': header_html[3].text if header_html[3] else None,
+        'genre':other_info_html[0].text if other_info_html[0] else None,
+        'description': other_info_html[1].text.strip() if other_info_html[1] else None
+    }
+
+
+def fetch_all_events_info(action_type_id):
+    urls = get_events_url_list(action_type_id)
+    events_info_list = []
+    for url in urls:
+        htlm = fetch_content(url)
+        bs = BeautifulSoup(html, 'html.parser')
+        events_info_list.append(fetch_event_info(bs))
+    return events_info_list
