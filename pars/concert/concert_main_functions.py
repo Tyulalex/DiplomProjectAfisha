@@ -12,7 +12,7 @@ def fetch_content(url, params=None):
         print(e)
 
 
-def get_number_of_events_and_urls(action_type_id=None, page=1):
+def fetch_number_of_events_and_urls(action_type_id=None, page=1):
     url = 'http://concert.ru/Home/Events'
     params = {
                 'Page': page,
@@ -32,7 +32,7 @@ def get_number_of_events_and_urls(action_type_id=None, page=1):
     return int(raw_number[0].split('-')[-1]), events_url, raw_number[1], current_page
 
 
-def get_events_url_list(action_type_id):
+def get_events_url_file(action_type_id):
     current_events, events_url_list, number_of_events,\
     current_page = get_number_of_events_and_urls(action_type_id)
     events_url_lists = []
@@ -93,14 +93,10 @@ def fetch_event_info(bs):
 
 
 def fetch_all_events_info(urls_file):
-    i = 0
     events_info_list = []
     with open(urls_file, 'r') as f:
         for line in f:
             url = f.readline()
             bs = BeautifulSoup(fetch_content(url), 'html.parser')
             events_info_list.append(fetch_event_info(bs))
-            i += 1
-            if i == 2:
-                break
     return events_info_list
