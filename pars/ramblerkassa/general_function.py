@@ -55,7 +55,7 @@ def fetch_number_of_events_and_urls(skip, event):
     return int(number_of_events.split()[-1]), events_url, skip
 
 
-def get_events_url_list(event):
+def get_events_url_file(event):
     number_of_events, events_url, skip = fetch_number_of_events_and_urls(0, event)
     while skip < number_of_events:
         events_url += fetch_number_of_events_and_urls(skip, event)[1]
