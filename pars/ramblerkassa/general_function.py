@@ -55,7 +55,7 @@ def fetch_number_of_events_and_urls(skip, event):
     return int(number_of_events.split()[-1]), events_url, skip
 
 
-def get_events_url_list(event):
+def get_events_url_file(event):
     number_of_events, events_url, skip = fetch_number_of_events_and_urls(0, event)
     while skip < number_of_events:
         events_url += fetch_number_of_events_and_urls(skip, event)[1]
@@ -63,16 +63,24 @@ def get_events_url_list(event):
             skip += 18
         else:
             skip +=24
-    return events_url
+    with open('%s.txt' %event, 'w') as f:
+        for url in events_url:
+            f.write(url + '\n')
+
 
 def get_events_info(event):
-    events_url = get_events_url_list(event)
-    for url in events_url[:1]:
-        html = fetch_content(url)
-        bs = BeautifulSoup(html,'html.parser')
-        if event == 'films':
-            return  special_function.fetch_film_info(bs), special_function.fetch_cinema_info(bs)
-        elif event == 'theatres':
-            return special_function.fetch_perfomance_info(bs), special_function.fetch_events_date_and_place_info(bs)
-        else:
-            return special_function.fetch_concert_info(bs), special_function.fetch_events_date_and_place_info(bs)
+    with open('%s.txt' %event, 'r') as f:
+        for line in f:
+            url = f.readline().strip()
+            if url:
+                html = fetch_content(url)
+                bs = BeautifulSoup(fetch_content(url),'html.parser')
+                if event == 'films':
+                    return  special_function.fetch_film_info(bs), \
+                            special_function.fetch_cinema_info(bs)
+                elif event == 'theatres':
+                    return special_function.fetch_perfomance_info(bs),\
+                           special_function.fetch_events_date_and_place_info(bs)
+                else:
+                    return special_function.fetch_concert_info(bs),\
+                           special_function.fetch_events_date_and_place_info(bs)

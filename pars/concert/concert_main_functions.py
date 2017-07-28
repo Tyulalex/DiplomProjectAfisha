@@ -12,7 +12,7 @@ def fetch_content(url, params=None):
         print(e)
 
 
-def get_number_of_events_and_urls(action_type_id=None, page=1):
+def fetch_number_of_events_and_urls(action_type_id=None, page=1):
     url = 'http://concert.ru/Home/Events'
     params = {
                 'Page': page,
@@ -29,21 +29,29 @@ def get_number_of_events_and_urls(action_type_id=None, page=1):
         events_url.append('http://concert.ru' + \
                           raw_data.find('a', class_="event__name").get('href'))
     current_page = page
-    return raw_number[0].split('-')[-1], events_url, raw_number[1], current_page
+    return int(raw_number[0].split('-')[-1]), events_url, raw_number[1], current_page
 
 
-def get_events_url_list(action_type_id):
+def get_events_url_file(action_type_id):
     current_events, events_url_list, number_of_events,\
     current_page = get_number_of_events_and_urls(action_type_id)
     events_url_lists = []
-    while current_events < number_of_events:
+    next_events = int(current_events)
+    while int(current_events) < int(number_of_events):
         current_page += 1
         events_url_lists += events_url_list
-        current_events,\
+        current_events += next_events
         events_url_list = get_number_of_events_and_urls(action_type_id,
-                                                        current_page)[0:2]
+                                                        current_page)[1]
         print(current_events, number_of_events)
-    return events_url_lists
+    if action_type_id == 1:
+        file_name = 'concert_urls.txt'
+    else:
+        file_name = 'theatre_urls.txt'
+    with open(file_name, 'w') as f:
+        for url in events_url_lists:
+            f.write(url + '\n')
+
 
 
 def fetch_event_header(bs):
@@ -71,8 +79,11 @@ def fetch_event_genre_and_description(bs):
 def fetch_event_info(bs):
     header_html = fetch_event_header(bs)
     other_info_html =  fetch_event_genre_and_description(bs)
+    raw_date = fetch_event_date(bs).text.strip().split('\r') if fetch_event_date(bs) else None
     return {
         'event title': header_html[0].text.strip(),
+        'event date': raw_date[0] if raw_date else None,
+        'event weekday': raw_date[1].strip().strip('(').strip(')') if raw_date else None,
         'age limit': header_html[1].text.strip() if header_html[1] else None,
         'place': header_html[2].text if header_html[2] else None,
         'adress': header_html[3].text if header_html[3] else None,
@@ -81,11 +92,11 @@ def fetch_event_info(bs):
     }
 
 
-def fetch_all_events_info(action_type_id):
-    urls = get_events_url_list(action_type_id)
+def fetch_all_events_info(urls_file):
     events_info_list = []
-    for url in urls:
-        html = fetch_content(url)
-        bs = BeautifulSoup(html, 'html.parser')
-        events_info_list.append(fetch_event_info(bs))
+    with open(urls_file, 'r') as f:
+        for line in f:
+            url = f.readline().strip()
+            bs = BeautifulSoup(fetch_content(url), 'html.parser')
+            events_info_list.append(fetch_event_info(bs))
     return events_info_list
