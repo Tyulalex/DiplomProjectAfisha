@@ -4,9 +4,12 @@ from datetime import datetime
 
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from bs4 import BeautifulSoup
 
 from app.server import create_app, db
 from app.server.database_models import Place, PlaceType, ShowEvent, Event, EventCategory, AgeCategory
+from pars.concert.concert_main_functions import fetch_all_events_info
+
 
 app = create_app('default')
 manager = Manager(app)
@@ -16,9 +19,9 @@ migrate = Migrate(app, db)
 
 @manager.command
 def seed_catalogue():
-    event_categories = ['Фильм', 'Спектакль', 'Выставка', 'Концерт']
+    event_categories = ['Фильм', 'Спектакль', 'Концерт']
     age_categories = ['0+', '6+', '12+', '16+', '18+']
-    place_types = ['Кинотеатры', 'Театры', 'Выставочные площадки', 'Концертные площадки']
+    place_types = ['Кинотеатры', 'Театры', 'Концертные площадки']
 
     for event_category in event_categories:
         db.session.add(EventCategory(category=event_category))
@@ -32,34 +35,28 @@ def seed_catalogue():
 @manager.command
 def seed():
     "Add seed data to the database."
+    concerts_info_list = fetch_all_events_info('pars/concert/concert_urls.txt')
+    for seed_element in concerts_info_list:
+        # place_type_id = db.session.query(PlaceType). \
+        #     filter(PlaceType.type == seed_element["place_type"]).one().id
 
-    with open('seed_db_test_data.json', encoding='utf-8') as data_file:
-        seed_data = json.load(data_file)
+        date_start = seed_element["event date"]
+        date_end = seed_element["event date"]
 
-    for seed_element in seed_data:
-        place_type_id = db.session.query(PlaceType). \
-            filter(PlaceType.type == seed_element["place_type"]).one().id
-
-        date_start = datetime.strptime(seed_element["date_start"], '%d/%m/%Y %H:%M:%S')
-        date_end = datetime.strptime(seed_element["date_end"], '%d/%m/%Y %H:%M:%S')
-
-        show_event = ShowEvent(
-            date_start=date_start, date_end=date_end, price_from=seed_element["price_from"],
-            price_to=seed_element["price_to"], currency='RUB'
-        )
         event = Event(
-            name=seed_element["name"], description=seed_element["description"], rating=seed_element["rating"]
+            name=seed_element["event title"],
+            description=seed_element["description"]
         )
 
         event.age_category_id = db.session.query(AgeCategory).filter(
-            AgeCategory.category == seed_element["age_category"]).one().id
+            AgeCategory.category == seed_element["age limit"]).one().id
 
-        event.event_category_id = db.session.query(EventCategory).filter(
-            EventCategory.category == seed_element["category"]).one().id
+        # event.event_category_id = db.session.query(EventCategory).filter(
+        #     EventCategory.category == seed_element["category"]).one().id
 
         show_event.event = event
         query_for_place = db.session.query(Place.id).filter(
-            (Place.name == seed_element["place_name"]) & (Place.address == seed_element["place_address"])
+            (Place.name == seed_element["place"]) & (Place.address == seed_element["address"])
         )
         is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
 
@@ -67,7 +64,9 @@ def seed():
             show_event.place_id = query_for_place.one().id
         else:
             show_event.place = Place(
-                name=seed_element["place_name"], address=seed_element["place_address"], place_type_id=place_type_id
+                name=seed_element["place title"],
+                address=seed_element["address"],
+                place_type_id=place_type_id
             )
 
         db.session.add(show_event)

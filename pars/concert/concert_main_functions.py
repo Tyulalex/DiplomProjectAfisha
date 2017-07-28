@@ -96,7 +96,7 @@ def fetch_all_events_info(urls_file):
     events_info_list = []
     with open(urls_file, 'r') as f:
         for line in f:
-            url = f.readline()
+            url = f.readline().strip()
             bs = BeautifulSoup(fetch_content(url), 'html.parser')
             events_info_list.append(fetch_event_info(bs))
     return events_info_list
