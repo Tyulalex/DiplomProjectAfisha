@@ -81,12 +81,10 @@ def fetch_cinema_info(bs):
             cinema_info['underground station'] = item.find('div', class_="rasp_place_metro").text
         showtime_2D_html = item.find('ul', attrs={'data-format': 0})
         if showtime_2D_html:
-            showtimes_info_2D_list = get_showtimes_and_price(showtime_2D_html)
+            cinema_info['sessions_info_2D'] = get_showtimes_and_price(showtime_2D_html)
         showtime_3D_html = item.find('ul', attrs={'data-format': 1})
         if showtime_3D_html:
-            showtimes_info_3D_list = get_showtimes_and_price(showtime_3D_html)
-        cinema_info['sessions_info_2D'] = showtimes_info_2D_list
-        cinema_info['sessions_info_3D'] = showtimes_info_3D_list
+            cinema_info['sessions_info_3D'] = get_showtimes_and_price(showtime_3D_html)        
         cinema_info_list.append(cinema_info)
     return cinema_info_list
 

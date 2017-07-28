@@ -34,14 +34,14 @@ def fetch_number_of_events_and_urls(action_type_id=None, page=1):
 
 def get_events_url_file(action_type_id):
     current_events, events_url_list, number_of_events,\
-    current_page = get_number_of_events_and_urls(action_type_id)
+    current_page = fetch_number_of_events_and_urls(action_type_id)
     events_url_lists = []
     next_events = int(current_events)
     while int(current_events) < int(number_of_events):
         current_page += 1
         events_url_lists += events_url_list
         current_events += next_events
-        events_url_list = get_number_of_events_and_urls(action_type_id,
+        events_url_list = fetch_number_of_events_and_urls(action_type_id,
                                                         current_page)[1]
         print(current_events, number_of_events)
     if action_type_id == 1:
