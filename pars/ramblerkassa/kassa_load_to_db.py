@@ -20,7 +20,7 @@ if __name__ == '__main__':
         for line in f:
             url = f.readline().strip()
             if url:
-                bs = (gen_func.fetch_content(url),'html.parser')
+                bs = BeautifulSoup(gen_func.fetch_content(url),'html.parser')
                 films_dict = spec_func.fetch_film_info(bs)
                 #films_dict будет содержать следующие ключи:
                 # 'title ru' - название на русском, - общее поле
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         for line in f:
             url = f.readline().strip()
             if url:
-                bs = (gen_func.fetch_content(url),'html.parser')
+                bs = BeautifulSoup(gen_func.fetch_content(url),'html.parser')
                 concert_dict = spec_func.fetch_concert_info(bs)
                 #concert_dict будет содержать следующие ключи:
                 # 'title' - название, - общее поле
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         for line in f:
             url = f.readline().strip()
             if url:
-                bs = (gen_func.fetch_content(url),'html.parser')
+                bs = BeautifulSoup(gen_func.fetch_content(url),'html.parser')
                 perfomace_dict = spec_func.fetch_perfomance_info(bs)
                 # perfomace_dict будет содержать следующие ключи:
                 # 'title' - название спектакля, - общее поле
