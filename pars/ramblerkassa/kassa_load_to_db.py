@@ -9,14 +9,14 @@ import special_function as spec_func
 
 if __name__ == '__main__':
     #получаем файлы с url
-    gen_func.get_events_url_file(concerts) # файл - concerts.txt
-    gen_func.get_events_url_file(films)    # файл - films.txt
-    gen_func.get_events_url_file(theatres) # файл - theatres.txt
+    gen_func.get_events_url_file('concerts') # файл - concerts.txt
+    gen_func.get_events_url_file('films')    # файл - films.txt
+    gen_func.get_events_url_file('theatres') # файл - theatres.txt
 
     #получаем информацию с сайта
     'films'
-    #информация по фильмам парсится на текущий день!
-    with open('%s.txt' %films, 'r') as f:
+    # информация по фильмам парсится на текущий день!
+    with open('films.txt', 'r') as f:
         for line in f:
             url = f.readline().strip()
             if url:
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                 # 'sessions_info_2D' - информация по сеансам в 2D: минимальная и максимальная цена, время сеансов
                 # 'sessions_info_3D' - информация по сеансам в 3D: минимальная и максимальная цена, время сеансов
     'concerts'
-    with open('%s.txt' %concerts, 'r') as f:
+    with open('concerts.txt' , 'r') as f:
         for line in f:
             url = f.readline().strip()
             if url:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                 # 'underground station' - станция метро, - общее поле
                 # 'event date' - общее поле с theatres
     'theatres'
-    with open('%s.txt' %theatres, 'r') as f:
+    with open('theatres.txt', 'r') as f:
         for line in f:
             url = f.readline().strip()
             if url:
@@ -71,7 +71,7 @@ if __name__ == '__main__':
                 # 'actors' - актёры, - общее поле с films
                 # 'producer' - режжисёр , - общее поле с films
                 # 'price' - цена
-                place_and_date_dict = spec_func.fetch_events_date_and_place_info(bs)
+                place_and_date_dict = spec_func.fetch_events_date_and_place_info(bs)                
                 # place_and_date_dict будет содержать следующие ключи:
                 # 'place' - название места, - общее поле
                 # 'place url' - ссылка на место, - общее поле (тоже что и link)
