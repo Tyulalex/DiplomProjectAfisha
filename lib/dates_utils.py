@@ -1,6 +1,6 @@
 from calendar import monthrange
 import calendar
-from datetime import datetime
+from datetime import datetime, time
 
 
 def get_this_month_date_range():
@@ -39,3 +39,13 @@ def get_tomorrow_date_range():
         datetime(datetime.now().year, datetime.now().month, datetime.now().day + 1, 00, 00, 00),
         datetime(datetime.now().year, datetime.now().month, datetime.now().day + 1, 23, 59, 59)
     ]
+
+
+def get_time_range_by_day_period(day_period):
+    arg_to_time_map = {
+        'morning': [time(6, 0, 0), time(11,59,59)],
+        'afternoon': [time(12, 0, 0), time(17,59,59)],
+        'evening': [time(18, 0, 0), time(21, 59, 59)],
+        'night': [time(22, 0, 0), time(5,59,59)]
+    }
+    return arg_to_time_map[day_period]

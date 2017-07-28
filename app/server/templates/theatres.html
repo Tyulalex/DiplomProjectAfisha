@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Концерты{% endblock %}
+{% block title %}Спектакль{% endblock %}
 {% block head %}
 {{ super() }}
 {% endblock %}
 {% block content %}
 <div class="container">
-    <h1>Концерты в Москве</h1>
-    <form class="form-inline" action="/concerts" method="get" id="myform">
+    <h1>Спектакли в Москве</h1>
+    <form class="form-inline" action="/theatres" method="get" id="myform">
         <div class="well">
         <div class="form-group">
             <select name="dates">
@@ -23,11 +23,11 @@
                 data-source='{{metro_data_source_json}}'>
         </div>
         <div class="form-group">
-            <input type="text" name="place" data-provide="typeahead" placeholder="Концертная площадка" data-items="2"
+            <input type="text" name="place" data-provide="typeahead" placeholder="Театр" data-items="2"
                 data-source='{{place_data_source_json}}'>
         </div>
         <div class="form-group">
-            <input type="text" name="event" data-provide="typeahead" placeholder="Название мероприятия" data-items="2"
+            <input type="text" name="event" data-provide="typeahead" placeholder="Спектакль" data-items="2"
                 data-source='{{event_list_to_json}}'>
         </div>
         <div class="form-group">
@@ -39,17 +39,17 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Концерт</th>
+                    <th>Фильм</th>
                     <th>Рейтинг</th>
                     <th>Возрастная категория</th>
                 </tr>
             </thead>
             <tbody>
-                {% for concert in concert_events %}
+                {% for event in events %}
                   <tr class="active">
-                      <td><a href="/concert/{{concert.event.id}}">{{ concert.event.name }}</a></td>
-                      <td>{{ concert.event.rating }}</td>
-                      <td>{{ concert.event.age_category.category }}</td>
+                      <td><a href="/theatre/{{event.event.id}}">{{ event.event.name }}</a></td>
+                      <td>{{ event.event.rating }}</td>
+                      <td>{{ event.event.age_category.category }}</td>
                   </tr>
                 {% endfor %}
             </tbody>
