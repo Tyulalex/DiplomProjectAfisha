@@ -87,7 +87,7 @@ def movie(eventId):
     event_info = db.session.query(Event).filter(Event.id == eventId).one()
     movie_schedule = ShowEvents(event_id=eventId).get_filtered_show_events(db, **kwargs)
     return render_template(
-        "movie.html", movie_info=event_info, movie_schedule=movie_schedule, metro_data_source_json=get_metro_source_json_data(),
+        "movie.html", event_info=event_info, movie_schedule=movie_schedule, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Кинотеатры')
     )
 

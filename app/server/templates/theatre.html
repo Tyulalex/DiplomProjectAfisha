@@ -5,10 +5,10 @@
 {% endblock %}
 {% block content %}
 <div class="container">
-    <h1>{{movie_info.name}}</h1>
-    <p>{{movie_info.description}}</p>
+    <h1>{{event_info.name}}</h1>
+    <p>{{event_info.description}}</p>
     <h3>Расписание сеансов</h3>
-     <form class="form-inline" action="/movie/{{movie_info.id}}" method="get" id="myform">
+     <form class="form-inline" action="/theatre/{{event_info.id}}" method="get" id="myform">
         <div class="well">
            <form class="form-horizontal">
              <fieldset>
