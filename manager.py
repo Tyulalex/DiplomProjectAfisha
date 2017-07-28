@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from geopy.distance import great_circle
 from datetime import datetime
 
 from flask_migrate import Migrate, MigrateCommand
@@ -7,14 +8,27 @@ from flask_script import Manager
 from bs4 import BeautifulSoup
 
 from app.server import create_app, db
+<<<<<<< HEAD
 from app.server.database_models import Place, PlaceType, ShowEvent, Event, EventCategory, AgeCategory
 from pars.concert.concert_main_functions import fetch_all_events_info
 
+=======
+from app.server.database_models import Place, PlaceType, ShowEvent, Event, EventCategory, AgeCategory, MetroStations
+from lib.geo_parser import get_mos_metro_geo_data, get_coordinates_by_address
+>>>>>>> master
 
 app = create_app('default')
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 migrate = Migrate(app, db)
+
+
+@manager.command
+def fill_db():
+    seed_catalogue()
+    seed()
+    seed_metro_stations()
+    seed_stations_id()
 
 
 @manager.command
@@ -29,6 +43,29 @@ def seed_catalogue():
         db.session.add(AgeCategory(category=age_category))
     for place_type in place_types:
         db.session.add(PlaceType(type=place_type))
+    db.session.commit()
+
+
+@manager.command
+def seed_metro_stations():
+    metro_data_to_insert = get_mos_metro_geo_data()
+    for metro_name, coordinates in metro_data_to_insert.items():
+        db.session.add(MetroStations(name=metro_name, latitude=coordinates[0], longitude=coordinates[1]))
+    db.session.commit()
+
+
+@manager.command
+def seed_stations_id():
+    places = db.session.query(Place).all()
+    for place in places:
+        list_of_distance_to_metro_id_maps = []
+        longitude, latitude = get_coordinates_by_address(address=place.address)
+        metro_stations = db.session.query(MetroStations).all()
+        for metro_station in metro_stations:
+            distance = great_circle((float(longitude), float(latitude)), (metro_station.longitude, metro_station.latitude)).km
+            list_of_distance_to_metro_id_maps.append((distance, metro_station.id))
+        nearest_station_id = min(list_of_distance_to_metro_id_maps)[1]
+        place.station_id = nearest_station_id
     db.session.commit()
 
 

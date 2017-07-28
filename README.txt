@@ -8,6 +8,9 @@ python manager.py db upgrade
 python manager.py seed_catalogue
 ## seeding test data
 python manager.py seed
+python manager.py seed_metro_stations
+python manager.py seed_stations_id
+
 
 
 #to run application:

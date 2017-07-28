@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="/static/css/daterangepicker.css" />
+    <script type="text/javascript" src="/static/js/sugar.min.js"></script>
+    <script type="text/javascript" src="/static/js/daterangepicker.js"></script>
     <style>
         #eventsTable {
             width: 100%;
@@ -40,10 +44,36 @@
     <form class="form-inline" action="/" method="get" id="myform">
         <h1>Концерты в Москве</h1>
         <div class="form-group">
-             <p>Выберите дату:
-                <input type="date" name="calendar" value="2012-06-01"
-                    max="2019-06-04" min="2012-05-29"><br/>
+            <h4>Выберите Дату</h4>
+        <div class="well">
+          <form class="form-horizontal">
+           <fieldset>
+            <div class="control-group">
+              <label class="control-label" for="reservation">Диапазон дат:</label>
+              <div class="controls">
+               <div class="input-prepend">
+                 <span class="add-on"><i class="icon-calendar"></i></span><input type="text" name="reservation" id="reservation" />
+               </div>
+              </div>
+            </div>
+           </fieldset>
+          </form>
+
+          <script type="text/javascript">
+          $(document).ready(function() {
+            $('#reservation').daterangepicker();
+          });
+          </script>
         </div>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+                <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                {% for element in metro_stations_list%}
+                <li><a href=?metro={{element.name}}>{{element.name}}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
         <button type="submit" class="btn btn-info">Искать</button>
             <div class="bs-example">
 	        <div class="row">
@@ -53,6 +83,7 @@
 	            <div class="col-sm-4">.col-sm-4</div>
                 {% endfor %}
             </div>
+         </div>
 </div>
     </form>
 </div>
