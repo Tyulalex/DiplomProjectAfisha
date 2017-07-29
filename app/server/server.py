@@ -8,16 +8,6 @@ from lib.events_builder import Events, ShowEvents
 app = create_app(config_name='default')
 
 
-@app.route('/')
-def index_page():
-    fresh_events = Events(event_type='Концерт').get_fresh_events(db)[:3]
-    movie_events = Events(event_type='Фильм').get_fresh_events(db)[:3]
-    play_events = Events(event_type='Спектакль').get_fresh_events(db)[:3]
-    fresh_events.extend(movie_events)
-    fresh_events.extend(play_events)
-    return render_template("index.html", fresh_events=fresh_events)
-
-
 def get_places_json_by_place_type(place_type):
     places_list = db.session.query(Place).join(PlaceType).filter(PlaceType.type == place_type).all()
     return json.dumps([place.name for place in places_list])
@@ -26,6 +16,16 @@ def get_places_json_by_place_type(place_type):
 def get_metro_source_json_data():
     metro_stations_list = db.session.query(MetroStations).all()
     return json.dumps([metro.name for metro in metro_stations_list])
+
+
+@app.route('/')
+def index_page():
+    fresh_events = Events(event_type='Концерт').get_fresh_events(db)[:3]
+    movie_events = Events(event_type='Фильм').get_fresh_events(db)[:3]
+    play_events = Events(event_type='Спектакль').get_fresh_events(db)[:3]
+    fresh_events.extend(movie_events)
+    fresh_events.extend(play_events)
+    return render_template("index.html", fresh_events=fresh_events)
 
 
 @app.route('/concerts/')
@@ -37,10 +37,9 @@ def concerts():
     kwargs = {'dates': dates, 'station': station, 'place': place, 'event': event_name}
     show_concert_events = Events(event_type='Концерт').get_list_of_events(db, **kwargs)
     dictinct_events = list(set(show_concert_events))
-
     distinct_event_list_names = list(set([concert.event.name for concert in show_concert_events]))
     return render_template(
-        "concerts.html", concert_events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
+        "concerts.html", events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Концертные площадки'),
         event_list_to_json=json.dumps(distinct_event_list_names)
     )
@@ -56,7 +55,7 @@ def concert(eventId):
     event_info = db.session.query(Event).filter(Event.id == eventId).one()
     concert_schedule = ShowEvents(event_id=eventId).get_filtered_show_events(db, **kwargs)
     return render_template(
-        "concert.html", concert_info=event_info, concert_schedule=concert_schedule, metro_data_source_json=get_metro_source_json_data(),
+        "concert.html", event_info=event_info, event_schedule=concert_schedule, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Концертные площадки')
     )
 
@@ -72,7 +71,7 @@ def movies():
     dictinct_events = list(set(show_movie_events))
     distinct_event_list_names = list(set([movie.event.name for movie in show_movie_events]))
     return render_template(
-        "movies.html", movie_events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
+        "movies.html", events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Кинотеатры'),
         event_list_to_json=json.dumps(distinct_event_list_names)
     )
@@ -87,7 +86,7 @@ def movie(eventId):
     event_info = db.session.query(Event).filter(Event.id == eventId).one()
     movie_schedule = ShowEvents(event_id=eventId).get_filtered_show_events(db, **kwargs)
     return render_template(
-        "movie.html", event_info=event_info, movie_schedule=movie_schedule, metro_data_source_json=get_metro_source_json_data(),
+        "movie.html", event_info=event_info, event_schedule=movie_schedule, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Кинотеатры')
     )
 
@@ -118,6 +117,6 @@ def theatre(eventId):
     event_info = db.session.query(Event).filter(Event.id == eventId).one()
     theatre_schedule = ShowEvents(event_id=eventId).get_filtered_show_events(db, **kwargs)
     return render_template(
-        "movie.html", event_info=event_info, event_schedule=theatre_schedule, metro_data_source_json=get_metro_source_json_data(),
+        "theatre.html", event_info=event_info, event_schedule=theatre_schedule, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Театры')
     )
