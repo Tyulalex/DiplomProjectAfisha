@@ -93,32 +93,55 @@ def seed_films():
                 db.session.add(event)
                 db.session.commit()
                 for cinema in cinemas_dict:
+
+
+
                     query_for_place = db.session.query(Place.id).filter(
                     (Place.name == cinema["name"])\
                      & (Place.address == cinema['adress'])
                     )
                     is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
-                    if is_place_already_exists:
-                        show_event.place_id = query_for_place.one().id
-                    else:
-                        show_event.place = Place(
-                            name=cinema["name"],\
-                            address=cinema['adress'],\
-                            place_type_id=place_type_id
+                    # if is_place_already_exists:
+                    #     show_event.place_id = query_for_place.one().id
+                    # else:
+                    #     show_event.place = Place(
+                    #         name=cinema["name"],\
+                    #         address=cinema['adress'],\
+                    #         place_type_id=place_type_id
+                    #     )
+                    # db.session.add(Place)
+                    # db.session.commit()
+                    if not is_place_already_exists:
+                        db.session.add(Place(
+                                name=cinema["name"],\
+                                address=cinema['adress'],\
+                                place_type_id=place_type_id
+                            )
                         )
-                    db.session.add(Place)
-                    db.session.commit()
-                    for showtime in cinema['sessions_info_2D']:
-                        show_event = ShowEvent(
-                        date_start=showtime['showtime'], date_end=datetime.today().day,
-                        price_from=showtime['min price'],
-                        price_to=showtime['max price'],
-                        currency='RUB',
-                        event_id = Event.id,
-                        place_id = Place.place_type_id
-                        )
-                        db.session.add(show_event)
                         db.session.commit()
+                    place_id = query_for_place.one().id
+
+
+                    showtimes = cinema.get('sessions_info_2D')
+                    if showtimes:
+                        for showtime in showtimes:
+                            date_now = datetime.now()
+                            time_show = showtime['showtime'].split(':')
+                            show_event = ShowEvent(
+                            date_start=datetime(date_now.year,
+                                                date_now.month,
+                                                date_now.day,
+                                                int(time_show[0]),
+                                                int(time_show[1])
+                                                ),
+                            price_from=showtime['min price'],
+                            price_to=showtime['max price'],
+                            currency='RUB',
+                            event_id=event.id,
+                            place_id=place_id,
+                            )
+                            db.session.add(show_event)
+                            db.session.commit()
 
 
 @manager.command
