@@ -2,6 +2,24 @@ import requests
 from bs4 import BeautifulSoup
 
 
+def get_month(month):
+    ru_month_values = {
+        'января': 1,
+        'февраля': 2,
+        'марта': 3,
+        'апреля': 4,
+        'мая': 5,
+        'июня': 6,
+        'июля': 7,
+        'августа': 8,
+        'сентября': 9,
+        'октября': 10,
+        'ноября': 10,
+        'декабря': 12,
+    }
+    return ru_month_values.get(month)
+
+
 def fetch_content(url, params=None):
     try:
         result = requests.get(url, params=params)
@@ -66,7 +84,8 @@ def fetch_event_header(bs):
 def fetch_event_date(bs):
     raw_data = bs.find('div', class_="eventTabs")
     if raw_data:
-        return raw_data.find('span', class_="eventTabs__tableDate")
+        return raw_data.find('span', class_="eventTabs__tableDate"),\
+               raw_data.find('div', class_="eventTabs__tableTime")
 
 
 def fetch_event_genre_and_description(bs):
@@ -79,10 +98,12 @@ def fetch_event_genre_and_description(bs):
 def fetch_event_info(bs):
     header_html = fetch_event_header(bs)
     other_info_html =  fetch_event_genre_and_description(bs)
-    raw_date = fetch_event_date(bs).text.strip().split('\r') if fetch_event_date(bs) else None
+    raw_date = fetch_event_date(bs)[0].text.strip().split('\r') if fetch_event_date(bs)[0] else None
+    raw_time = fetch_event_date(bs)[1].text if fetch_event_date(bs)[1] else None
     print(header_html[0].text.strip())
     return {
         'event title': header_html[0].text.strip(),
+        'event time': raw_time,
         'event date': raw_date[0] if raw_date else None,
         'event weekday': raw_date[1].strip().strip('(').strip(')') if raw_date else None,
         'age limit': header_html[1].text.strip() if header_html[1] else None,
