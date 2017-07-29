@@ -12,36 +12,36 @@ if __name__ == '__main__':
     main_func.get_events_url_file(2) # файл - theatre_urls.txt
 
 
-    #Получаем информацию с сайта. Для концертов и театров получается идентичная
-    #информация.
-
-    with open('concert_urls.txt' , 'r') as f:
-        for line in f:
-            url = f.readline().strip()
-            if url:
-                bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
-                concert_dict = main_func.fetch_event_info(bs)
-                # concert_dict содержит следующие ключи:
-                # 'event title' - название,
-                # 'event date' - дата,
-                # 'event weekday' - день недели,
-                # 'age limit' - возрастное ограничение,
-                # 'place' - место проведения,
-                # 'adress' - адресс места,
-                # 'genre' - жанр,
-                # 'description' - описание
-    with open('theatre_urls.txt' , 'r') as f:
-        for line in f:
-            url = f.readline().strip()
-            if url:
-                bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
-                theatre_dict = main_func.fetch_event_info(bs)
-                # theatre_dict содержит следующие ключи:
-                # 'event title' - название,
-                # 'event date' - дата,
-                # 'event weekday' - день недели,
-                # 'age limit' - возрастное ограничение,
-                # 'place' - место проведения,
-                # 'adress' - адресс места,
-                # 'genre' - жанр,
-                # 'description' - описание
+    # #Получаем информацию с сайта. Для концертов и театров получается идентичная
+    # #информация.
+    #
+    # with open('concert_urls.txt' , 'r') as f:
+    #     for line in f:
+    #         url = f.readline().strip()
+    #         if url:
+    #             bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
+    #             concert_dict = main_func.fetch_event_info(bs)
+    #             # concert_dict содержит следующие ключи:
+    #             # 'event title' - название,
+    #             # 'event date' - дата,
+    #             # 'event weekday' - день недели,
+    #             # 'age limit' - возрастное ограничение,
+    #             # 'place' - место проведения,
+    #             # 'adress' - адресс места,
+    #             # 'genre' - жанр,
+    #             # 'description' - описание
+    # with open('theatre_urls.txt' , 'r') as f:
+    #     for line in f:
+    #         url = f.readline().strip()
+    #         if url:
+    #             bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
+    #             theatre_dict = main_func.fetch_event_info(bs)
+    #             # theatre_dict содержит следующие ключи:
+    #             # 'event title' - название,
+    #             # 'event date' - дата,
+    #             # 'event weekday' - день недели,
+    #             # 'age limit' - возрастное ограничение,
+    #             # 'place' - место проведения,
+    #             # 'adress' - адресс места,
+    #             # 'genre' - жанр,
+    #             # 'description' - описание

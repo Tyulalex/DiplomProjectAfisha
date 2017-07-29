@@ -93,24 +93,11 @@ def seed_films():
                 db.session.add(event)
                 db.session.commit()
                 for cinema in cinemas_dict:
-
-
-
                     query_for_place = db.session.query(Place.id).filter(
                     (Place.name == cinema["name"])\
                      & (Place.address == cinema['adress'])
                     )
                     is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
-                    # if is_place_already_exists:
-                    #     show_event.place_id = query_for_place.one().id
-                    # else:
-                    #     show_event.place = Place(
-                    #         name=cinema["name"],\
-                    #         address=cinema['adress'],\
-                    #         place_type_id=place_type_id
-                    #     )
-                    # db.session.add(Place)
-                    # db.session.commit()
                     if not is_place_already_exists:
                         db.session.add(Place(
                                 name=cinema["name"],\
@@ -125,15 +112,17 @@ def seed_films():
                     showtimes = cinema.get('sessions_info_2D')
                     if showtimes:
                         for showtime in showtimes:
-                            date_now = datetime.now()
                             time_show = showtime['showtime'].split(':')
+                            date_now = datetime.now()
+                            date_time_show = datetime(date_now.year,
+                                                       date_now.month,
+                                                       date_now.day,
+                                                       int(time_show[0]),
+                                                       int(time_show[1])
+                                                       )
                             show_event = ShowEvent(
-                            date_start=datetime(date_now.year,
-                                                date_now.month,
-                                                date_now.day,
-                                                int(time_show[0]),
-                                                int(time_show[1])
-                                                ),
+                            date_start=date_time_show,
+                            date_end=date_time_show,
                             price_from=showtime['min price'],
                             price_to=showtime['max price'],
                             currency='RUB',
@@ -145,8 +134,131 @@ def seed_films():
 
 
 @manager.command
-def seed_films():
+def seed_theatres():
     "Add seed data to the database."
+    with open('pars/concert/theatre_urls.txt', 'r') as f:
+        for line in f:
+            url = f.readline().strip()
+            if url:
+                bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
+                theatres_dict = main_func.fetch_event_info(bs)
+                place_type_id = db.session.query(PlaceType). \
+                filter(PlaceType.type == "Театры").one().id
+                event = Event(
+                    name=theatres_dict["event title"],
+                    description="{0}, {1}".format(
+                        theatres_dict["description"],
+                        theatres_dict["genre"]
+                        )
+                )
+                event.age_category_id = db.session.query(AgeCategory).filter(
+                AgeCategory.category == theatres_dict["age limit"]).one().id
+                event.event_category_id = db.session.query(EventCategory).filter(
+                EventCategory.category == "Спектакль").one().id
+                db.session.add(event)
+                db.session.commit()
+                query_for_place = db.session.query(Place.id).filter(
+                (Place.name == theatres_dict["place"])\
+                 & (Place.address == theatres_dict['adress'])
+                )
+                is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
+                if not is_place_already_exists:
+                    db.session.add(Place(
+                            name=theatres_dict["place"],\
+                            address=theatres_dict['adress'],\
+                            place_type_id=place_type_id
+                        )
+                    )
+                    db.session.commit()
+                event_date = theatres_dict.get('event date')
+                if event_date:
+                    event_date = event_date.split()
+                    event_day = int(event_date[0])
+                    event_month = int(main_func. get_month(event_date[1]))
+                    place_id = query_for_place.one().id
+                    time_show = theatres_dict['event time'].split(':')
+                    date_now = datetime.now()
+                    date_time_show = datetime(date_now.year,
+                                               event_month,
+                                               event_day,
+                                               int(time_show[0]),
+                                               int(time_show[1])
+                                              )
+                    show_event = ShowEvent(
+                    date_start=date_time_show,
+                    date_end=date_time_show,
+                    # price_from=showtime['min price'],
+                    # price_to=showtime['max price'],
+                    # currency='RUB',
+                    event_id=event.id,
+                    place_id=place_id,
+                    )
+                    db.session.add(show_event)
+                    db.session.commit()
+
+
+@manager.command
+def seed_concerts():
+    "Add seed data to the database."
+    with open('pars/concert/concert_urls.txt', 'r') as f:
+        for line in f:
+            url = f.readline().strip()
+            if url:
+                bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
+                theatres_dict = main_func.fetch_event_info(bs)
+                place_type_id = db.session.query(PlaceType). \
+                filter(PlaceType.type == "Театры").one().id
+                event = Event(
+                    name=theatres_dict["event title"],
+                    description="{0}, {1}".format(
+                        theatres_dict["description"],
+                        theatres_dict["genre"]
+                        )
+                )
+                event.age_category_id = db.session.query(AgeCategory).filter(
+                AgeCategory.category == theatres_dict["age limit"]).one().id
+                event.event_category_id = db.session.query(EventCategory).filter(
+                EventCategory.category == "Спектакль").one().id
+                db.session.add(event)
+                db.session.commit()
+                query_for_place = db.session.query(Place.id).filter(
+                (Place.name == theatres_dict["place"])\
+                 & (Place.address == theatres_dict['adress'])
+                )
+                is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
+                if not is_place_already_exists:
+                    db.session.add(Place(
+                            name=theatres_dict["place"],\
+                            address=theatres_dict['adress'],\
+                            place_type_id=place_type_id
+                        )
+                    )
+                    db.session.commit()
+                event_date = theatres_dict.get('event date')
+                if event_date:
+                    event_date = event_date.split()
+                    event_day = int(event_date[0])
+                    event_month = int(main_func. get_month(event_date[1]))
+                    place_id = query_for_place.one().id
+                    time_show = theatres_dict['event time'].split(':')
+                    date_now = datetime.now()
+                    date_time_show = datetime(date_now.year,
+                                               event_month,
+                                               event_day,
+                                               int(time_show[0]),
+                                               int(time_show[1])
+                                              )
+                    show_event = ShowEvent(
+                    date_start=date_time_show,
+                    date_end=date_time_show,
+                    # price_from=showtime['min price'],
+                    # price_to=showtime['max price'],
+                    # currency='RUB',
+                    event_id=event.id,
+                    place_id=place_id,
+                    )
+                    db.session.add(show_event)
+                    db.session.commit()
 
 
 
