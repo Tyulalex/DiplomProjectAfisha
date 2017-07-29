@@ -34,10 +34,15 @@ def concerts():
     event_name = request.args.get('event')
     kwargs = {'dates': dates, 'station': station, 'place': place, 'event': event_name}
     show_concert_events = Events(event_type='Концерт').get_list_of_events(db, **kwargs)
-    dictinct_events = list(set(show_concert_events))
+    distinct_event_list = []
+
+    for show_event in show_concert_events:
+        event_names = [event.event.name for event in distinct_event_list]
+        if show_event.event.name not in event_names:
+            distinct_event_list.append(show_event)
     distinct_event_list_names = list(set([concert.event.name for concert in show_concert_events]))
     return render_template(
-        "concerts.html", events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
+        "concerts.html", events=distinct_event_list, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Концертные площадки'),
         event_list_to_json=json.dumps(distinct_event_list_names)
     )
@@ -104,10 +109,15 @@ def theatres():
     play_name = request.args.get('play')
     kwargs = {'dates': dates, 'station': station, 'place': place, 'event': play_name}
     show_play_events = Events(event_type='Спектакль').get_list_of_events(db, **kwargs)
-    dictinct_events = list(set(show_play_events))
+    distinct_event_list = []
+
+    for show_event in show_play_events:
+        event_names = [event.event.name for event in distinct_event_list]
+        if show_event.event.name not in event_names:
+            distinct_event_list.append(show_event)
     distinct_event_list_names = list(set([movie.event.name for movie in show_play_events]))
     return render_template(
-        "theatres.html", events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
+        "theatres.html", events=distinct_event_list, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Театры'),
         event_list_to_json=json.dumps(distinct_event_list_names)
     )

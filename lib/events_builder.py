@@ -23,12 +23,10 @@ class Events:
     def get_list_of_events(self, db, **kwargs):
         show_events = self.get_filtered_events_by_category(db)
         if kwargs.get('station'):
-
-            for show_event in show_events:
-                if show_event.place.metro_station:
-                    if show_event.place.metro_station.name == kwargs.get('station'):
-                        show_events = show_events.append(show_event)
-
+            show_events = [
+                show_event for show_event in show_events if show_event.place.metro_station and
+                show_event.place.metro_station.name == kwargs.get('station')
+                ]
         if kwargs.get('event'):
             show_events = [
                 show_event for show_event in show_events if show_event.event.name == kwargs.get('event')
@@ -63,6 +61,7 @@ class ShowEvents():
 
         event_schedule = db.session.query(ShowEvent).join(Event).join(EventCategory). \
             join(Place).outerjoin(MetroStations).filter(Event.id == self.event_id).all()
+
         if kwargs.get('time'):
             time_range = get_time_range_by_day_period(kwargs.get('time'))
             event_schedule = [
@@ -74,7 +73,8 @@ class ShowEvents():
                 ]
         if kwargs.get('station'):
             event_schedule = [
-                showevent for showevent in event_schedule if showevent.place.metro_station.name == kwargs.get('station')
+                showevent for showevent in event_schedule if showevent.place.metro_station and
+                showevent.place.metro_station.name == kwargs.get('station')
                 ]
         if kwargs.get('date'):
             dates_range = kwargs.get('date').replace(" ", "").split('-')
