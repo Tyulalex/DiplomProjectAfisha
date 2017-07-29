@@ -3,7 +3,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-import special_function
+# import special_function
 
 
 def get_url_params(event):

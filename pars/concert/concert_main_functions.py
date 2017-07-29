@@ -80,6 +80,7 @@ def fetch_event_info(bs):
     header_html = fetch_event_header(bs)
     other_info_html =  fetch_event_genre_and_description(bs)
     raw_date = fetch_event_date(bs).text.strip().split('\r') if fetch_event_date(bs) else None
+    print(header_html[0].text.strip())
     return {
         'event title': header_html[0].text.strip(),
         'event date': raw_date[0] if raw_date else None,

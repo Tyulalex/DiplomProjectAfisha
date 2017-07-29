@@ -10,6 +10,10 @@ from bs4 import BeautifulSoup
 from app.server import create_app, db
 from app.server.database_models import Place, PlaceType, ShowEvent, Event, EventCategory, AgeCategory, MetroStations
 from lib.geo_parser import get_mos_metro_geo_data, get_coordinates_by_address
+import pars.concert.concert_main_functions as main_func
+import pars.ramblerkassa.general_function as gen_func
+import pars.ramblerkassa.special_function as spec_func
+
 
 app = create_app('default')
 manager = Manager(app)
@@ -66,42 +70,56 @@ def seed_stations_id():
 @manager.command
 def seed():
     "Add seed data to the database."
-    concerts_info_list = fetch_all_events_info('pars/concert/concert_urls.txt')
-    for seed_element in concerts_info_list:
-        # place_type_id = db.session.query(PlaceType). \
-        #     filter(PlaceType.type == seed_element["place_type"]).one().id
+    with open('pars/ramblerkassa/films.txt', 'r') as f:
+        for line in f:
+            url = f.readline().strip()
+            if url:
+                bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
+                films_dict = spec_func.fetch_film_info(bs)
+                cinemas_dict = spec_func.fetch_cinema_info(bs)
+                place_type_id = db.session.query(PlaceType). \
+                filter(PlaceType.type == "Кинотеатры").one().id
+                event = Event(
+                    name=films_dict["title ru"], description="{0}{1}{2}".format(\
+                    films_dict["film description"],\
+                    films_dict["film len"], \
+                    films_dict["film countrymaker"])
+                )
+                event.age_category_id = db.session.query(AgeCategory).filter(
+                AgeCategory.category == films_dict["age limit"]).one().id
 
-        date_start = seed_element["event date"]
-        date_end = seed_element["event date"]
+                event.event_category_id = db.session.query(EventCategory).filter(
+                EventCategory.category == "Фильм").one().id
+                db.session.add(event)
+                db.session.commit()
+                for cinema in cinemas_dict:
+                    query_for_place = db.session.query(Place.id).filter(
+                    (Place.name == cinema["name"])\
+                     & (Place.address == cinema['adress'])
+                    )
+                    is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
+                    if is_place_already_exists:
+                        show_event.place_id = query_for_place.one().id
+                    else:
+                        show_event.place = Place(
+                            name=cinema["name"],\
+                            address=cinema['adress'],\
+                            place_type_id=place_type_id
+                        )
+                    db.session.add(Place)
+                    db.session.commit()
+                    for showtime in cinema['sessions_info_2D']:
+                        show_event = ShowEvent(
+                        date_start=showtime['showtime'], date_end=datetime.today().day,
+                        price_from=showtime['min price'],
+                        price_to=showtime['max price'],
+                        currency='RUB',
+                        event_id = Event.id,
+                        place_id = Place.place_type_id
+                        )
+                        db.session.add(show_event)
+                        db.session.commit()
 
-        event = Event(
-            name=seed_element["event title"],
-            description=seed_element["description"]
-        )
-
-        event.age_category_id = db.session.query(AgeCategory).filter(
-            AgeCategory.category == seed_element["age limit"]).one().id
-
-        # event.event_category_id = db.session.query(EventCategory).filter(
-        #     EventCategory.category == seed_element["category"]).one().id
-
-        show_event.event = event
-        query_for_place = db.session.query(Place.id).filter(
-            (Place.name == seed_element["place"]) & (Place.address == seed_element["address"])
-        )
-        is_place_already_exists = db.session.query(query_for_place.exists()).scalar()
-
-        if is_place_already_exists:
-            show_event.place_id = query_for_place.one().id
-        else:
-            show_event.place = Place(
-                name=seed_element["place title"],
-                address=seed_element["address"],
-                place_type_id=place_type_id
-            )
-
-        db.session.add(show_event)
-    db.session.commit()
 
 if __name__ == '__main__':
     manager.run()
