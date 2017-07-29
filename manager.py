@@ -210,7 +210,7 @@ def seed_concerts():
                 bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
                 theatres_dict = main_func.fetch_event_info(bs)
                 place_type_id = db.session.query(PlaceType). \
-                filter(PlaceType.type == "Театры").one().id
+                filter(PlaceType.type == "Концертные площадки").one().id
                 event = Event(
                     name=theatres_dict["event title"],
                     description="{0}, {1}".format(
@@ -221,7 +221,7 @@ def seed_concerts():
                 event.age_category_id = db.session.query(AgeCategory).filter(
                 AgeCategory.category == theatres_dict["age limit"]).one().id
                 event.event_category_id = db.session.query(EventCategory).filter(
-                EventCategory.category == "Спектакль").one().id
+                EventCategory.category == "Концерт").one().id
                 db.session.add(event)
                 db.session.commit()
                 query_for_place = db.session.query(Place.id).filter(
