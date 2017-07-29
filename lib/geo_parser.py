@@ -16,8 +16,11 @@ def get_coordinates_by_address(address):
     geo_code_response = response.json()
     print('Got response from yandex geo api {results}'.format(results=geo_code_response))
     assert type(geo_code_response) == dict
-    geo_code_points = geo_code_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
-    print('Coordinates of {address} are "{points}"'.format(address=address, points=geo_code_points))
+    try:
+        geo_code_points = geo_code_response['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
+        print('Coordinates of {address} are "{points}"'.format(address=address, points=geo_code_points))
+    except IndexError:
+        return (None, None)
     return geo_code_points.split()
 
 

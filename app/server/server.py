@@ -63,13 +63,20 @@ def movies():
     dates = request.args.get('dates')
     station = request.args.get('station')
     place = request.args.get('place')
-    movie_name = request.args.get('movie')
+    movie_name = request.args.get('event')
     kwargs = {'dates': dates, 'station': station, 'place': place, 'event': movie_name}
     show_movie_events = Events(event_type='Фильм').get_list_of_events(db, **kwargs)
-    dictinct_events = list(set(show_movie_events))
+
+    distinct_event_list = []
+
+    for show_event in show_movie_events:
+        event_names = [event.event.name for event in distinct_event_list]
+        if show_event.event.name not in event_names:
+            distinct_event_list.append(show_event)
+
     distinct_event_list_names = list(set([movie.event.name for movie in show_movie_events]))
     return render_template(
-        "movies.html", events=dictinct_events, metro_data_source_json=get_metro_source_json_data(),
+        "movies.html", events=distinct_event_list, metro_data_source_json=get_metro_source_json_data(),
         place_data_source_json=get_places_json_by_place_type(place_type='Кинотеатры'),
         event_list_to_json=json.dumps(distinct_event_list_names)
     )

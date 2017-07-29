@@ -78,3 +78,4 @@ class ShowEvent(db.Model):
 
     event = db.relationship("Event", backref="show_event")
     place = db.relationship("Place", backref="show_event")
+

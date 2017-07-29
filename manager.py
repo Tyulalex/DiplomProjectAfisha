@@ -56,15 +56,18 @@ def seed_metro_stations():
 def seed_stations_id():
     places = db.session.query(Place).all()
     for place in places:
-        list_of_distance_to_metro_id_maps = []
-        longitude, latitude = get_coordinates_by_address(address=place.address)
-        metro_stations = db.session.query(MetroStations).all()
-        for metro_station in metro_stations:
-            distance = great_circle((float(longitude), float(latitude)), (metro_station.longitude, metro_station.latitude)).km
-            list_of_distance_to_metro_id_maps.append((distance, metro_station.id))
-        nearest_station_id = min(list_of_distance_to_metro_id_maps)[1]
-        place.station_id = nearest_station_id
-    db.session.commit()
+        try:
+            list_of_distance_to_metro_id_maps = []
+            longitude, latitude = get_coordinates_by_address(address=place.address)
+            metro_stations = db.session.query(MetroStations).all()
+            for metro_station in metro_stations:
+                distance = great_circle((float(longitude), float(latitude)), (metro_station.longitude, metro_station.latitude)).km
+                list_of_distance_to_metro_id_maps.append((distance, metro_station.id))
+            nearest_station_id = min(list_of_distance_to_metro_id_maps)[1]
+            place.station_id = nearest_station_id
+            db.session.commit()
+        except:
+            pass
 
 
 @manager.command
@@ -80,9 +83,9 @@ def seed():
                 place_type_id = db.session.query(PlaceType). \
                 filter(PlaceType.type == "Кинотеатры").one().id
                 event = Event(
-                    name=films_dict["title ru"], description="{0}{1}{2}".format(\
-                    films_dict["film description"],\
-                    films_dict["film len"], \
+                    name=films_dict["title ru"], description="{0}{1}{2}".format(
+                    films_dict["film description"],
+                    films_dict["film len"],
                     films_dict["film countrymaker"])
                 )
                 event.age_category_id = db.session.query(AgeCategory).filter(
@@ -113,8 +116,8 @@ def seed():
                     # db.session.commit()
                     if not is_place_already_exists:
                         db.session.add(Place(
-                                name=cinema["name"],\
-                                address=cinema['adress'],\
+                                name=cinema["name"],
+                                address=cinema['adress'],
                                 place_type_id=place_type_id
                             )
                         )

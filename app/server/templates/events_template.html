@@ -39,8 +39,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Концерт</th>
-                    <th>Рейтинг</th>
+                    <th>{{th_event_name}}</th>
                     <th>Возрастная категория</th>
                 </tr>
             </thead>
@@ -48,7 +47,6 @@
                 {% for event in events %}
                   <tr class="active">
                       <td><a href="/{{url_attr_2}}/{{event.event.id}}">{{ event.event.name }}</a></td>
-                      <td>{{ event.event.rating }}</td>
                       <td>{{ event.event.age_category.category }}</td>
                   </tr>
                 {% endfor %}

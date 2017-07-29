@@ -11,13 +11,11 @@ class Events:
 
     def get_filtered_events_by_category(self, db):
         return db.session.query(ShowEvent).join(Event).join(EventCategory). \
-            join(Place).join(MetroStations).filter(EventCategory.category == self.event_type).all()
+            join(Place).outerjoin(MetroStations).filter(EventCategory.category == self.event_type).all()
 
     def get_fresh_events(self, db):
-        events = db.session.query(ShowEvent).join(Event).join(EventCategory). \
-            join(Place).join(MetroStations).order_by(Event.created_at.desc()).all()
         fresh_events = db.session.query(ShowEvent).join(Event).join(EventCategory). \
-            join(Place).join(MetroStations).filter(
+            join(Place).outerjoin(MetroStations).filter(
             (EventCategory.category == self.event_type)
         ).order_by(Event.created_at.desc()).all()
         return fresh_events
@@ -25,10 +23,12 @@ class Events:
     def get_list_of_events(self, db, **kwargs):
         show_events = self.get_filtered_events_by_category(db)
         if kwargs.get('station'):
-            show_events = [
-                show_event for show_event in show_events if
-                show_event.place.metro_station.name == kwargs.get('station')
-                ]
+
+            for show_event in show_events:
+                if show_event.place.metro_station:
+                    if show_event.place.metro_station.name == kwargs.get('station'):
+                        show_events = show_events.append(show_event)
+
         if kwargs.get('event'):
             show_events = [
                 show_event for show_event in show_events if show_event.event.name == kwargs.get('event')
@@ -62,7 +62,7 @@ class ShowEvents():
     def get_filtered_show_events(self, db, **kwargs):
 
         event_schedule = db.session.query(ShowEvent).join(Event).join(EventCategory). \
-            join(Place).join(MetroStations).filter(Event.id == self.event_id).all()
+            join(Place).outerjoin(MetroStations).filter(Event.id == self.event_id).all()
         if kwargs.get('time'):
             time_range = get_time_range_by_day_period(kwargs.get('time'))
             event_schedule = [
