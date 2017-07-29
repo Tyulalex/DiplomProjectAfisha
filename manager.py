@@ -68,7 +68,7 @@ def seed_stations_id():
 
 
 @manager.command
-def seed():
+def seed_films():
     "Add seed data to the database."
     with open('pars/ramblerkassa/films.txt', 'r') as f:
         for line in f:
@@ -80,7 +80,7 @@ def seed():
                 place_type_id = db.session.query(PlaceType). \
                 filter(PlaceType.type == "Кинотеатры").one().id
                 event = Event(
-                    name=films_dict["title ru"], description="{0}{1}{2}".format(\
+                    name=films_dict["title ru"], description="{0}, {1}, {2}".format(\
                     films_dict["film description"],\
                     films_dict["film len"], \
                     films_dict["film countrymaker"])
@@ -119,6 +119,12 @@ def seed():
                         )
                         db.session.add(show_event)
                         db.session.commit()
+
+
+@manager.command
+def seed_films():
+    "Add seed data to the database."
+
 
 
 if __name__ == '__main__':
