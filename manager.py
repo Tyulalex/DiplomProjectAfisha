@@ -122,25 +122,26 @@ def seed():
                     place_id = query_for_place.one().id
 
 
-
-                    for showtime in cinema['sessions_info_2D']:
-                        date_now = datetime.now()
-                        time_show = showtime['showtime'].split(':')
-                        show_event = ShowEvent(
-                        date_start=datetime(date_now.year,
-                                            date_now.month,
-                                            date_now.day,
-                                            time_show[0],
-                                            time_show[1]
-                                            )
-                        price_from=showtime['min price'],
-                        price_to=showtime['max price'],
-                        currency='RUB',
-                        event_id=Event.id,
-                        place_id=place_id,
-                        )
-                        db.session.add(show_event)
-                        db.session.commit()
+                    showtimes = cinema.get('sessions_info_2D')
+                    if showtimes:
+                        for showtime in showtimes:
+                            date_now = datetime.now()
+                            time_show = showtime['showtime'].split(':')
+                            show_event = ShowEvent(
+                            date_start=datetime(date_now.year,
+                                                date_now.month,
+                                                date_now.day,
+                                                int(time_show[0]),
+                                                int(time_show[1])
+                                                ),
+                            price_from=showtime['min price'],
+                            price_to=showtime['max price'],
+                            currency='RUB',
+                            event_id=event.id,
+                            place_id=place_id,
+                            )
+                            db.session.add(show_event)
+                            db.session.commit()
 
 
 if __name__ == '__main__':
