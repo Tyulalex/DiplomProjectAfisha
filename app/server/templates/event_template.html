@@ -64,7 +64,7 @@
             <tbody>
                 {% for show_event in event_schedule %}
                   <tr class="active">
-                      <td>{{ show_event.price_from if show_event.price_from else ''}} - {{ show_event.price_to }}</td>
+                      <td>{{ show_event.price_from if show_event.price_from else ''}} - {{ show_event.price_to if show_event.price_to else ''}}</td>
                       <td>{{ show_event.date_start }}</td>
                       <td>{{ show_event.place.name }}, {{ show_event.place.address }}, Ближайшее метро: {{ show_event.place.metro_station.name }}</td>
                   </tr>

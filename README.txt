@@ -7,7 +7,9 @@ python manager.py db upgrade
 ## apply some catalogue, like categories, age categories, place types
 python manager.py seed_catalogue
 ## seeding test data
-python manager.py seed
+python manager.py seed_films
+python manager.py seed_theatres
+python manager.py seed_concerts
 python manager.py seed_metro_stations
 python manager.py seed_stations_id
 
