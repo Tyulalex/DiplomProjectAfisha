@@ -20,12 +20,10 @@ def get_metro_source_json_data():
 
 @app.route('/')
 def index_page():
-    fresh_events = Events(event_type='Концерт').get_fresh_events(db)[:3]
+    concert_events = Events(event_type='Концерт').get_fresh_events(db)[:3]
     movie_events = Events(event_type='Фильм').get_fresh_events(db)[:3]
     play_events = Events(event_type='Спектакль').get_fresh_events(db)[:3]
-    fresh_events.extend(movie_events)
-    fresh_events.extend(play_events)
-    return render_template("index.html", fresh_events=fresh_events)
+    return render_template("index.html", concert_events=concert_events, movie_events=movie_events, play_events=play_events)
 
 
 @app.route('/concerts/')
