@@ -5,7 +5,9 @@ def receive_film_name(bs, languge):
     if languge == 'ru':
         return bs.find('h1', itemprop="name").text
     else:
-        return bs.find('h2', class_='item_title2').text
+        raw_en = bs.find('h2', class_='item_title2').text.strip()
+        raw_en = raw_en.split('\t')
+        return raw_en[0]
 
 
 def receive_film_genre(bs):
@@ -22,14 +24,15 @@ def receive_film_desription(bs):
         description_class = film_desciption_class
     else:
         description_class = "item_desc__text"
-    return bs.find('span', class_=description_class).text
+        if bs.find('span', class_=description_class):
+            return bs.find('span', class_=description_class).text.strip()
 
 
 def receive_film_len_countrymaker_producer(bs):
     film_info = []
     for item in bs.find_all('span', class_="dd"):
         film_info.append(item.text)
-    return film_info[0], film_info[1], film_info[2]
+    return film_info
 
 
 def receive_film_actors(bs):
@@ -44,15 +47,16 @@ def receive_film_actors(bs):
 
 
 def fetch_film_info(bs):
+    film_info = receive_film_len_countrymaker_producer(bs)
     return {
         'title ru': receive_film_name(bs, 'ru'),
         'title en': receive_film_name(bs, 'en'),
         'genre': receive_film_genre(bs),
         'age limit': receive_film_age_limit(bs),
         'film description': receive_film_desription(bs),
-        'film len': receive_film_len_countrymaker_producer(bs)[0],
-        'film countrymaker': receive_film_len_countrymaker_producer(bs)[1],
-        'film producer': receive_film_len_countrymaker_producer(bs)[2],
+        'film len': film_info[0] if len(film_info) > 0 else None,
+        'film countrymaker': film_info[1] if len(film_info) > 1 else None,
+        'film producer': film_info[2] if len(film_info) > 2  else None,
         'film actors': receive_film_actors(bs)
     }
 
@@ -84,7 +88,7 @@ def fetch_cinema_info(bs):
             cinema_info['sessions_info_2D'] = get_showtimes_and_price(showtime_2D_html)
         showtime_3D_html = item.find('ul', attrs={'data-format': 1})
         if showtime_3D_html:
-            cinema_info['sessions_info_3D'] = get_showtimes_and_price(showtime_3D_html)        
+            cinema_info['sessions_info_3D'] = get_showtimes_and_price(showtime_3D_html)
         cinema_info_list.append(cinema_info)
     return cinema_info_list
 
