@@ -14,7 +14,7 @@ def get_this_month_date_range():
 
 def get_this_year_date_range():
     return [
-        datetime(datetime.now().year, datetime.now().month, datetime.now().day + 1, 00, 00, 00),
+        datetime(datetime.now().year, datetime.now().month, datetime.now().day, 00, 00, 00),
         datetime(datetime.now().year, 12, 31, 23, 59, 59)
     ]
 
