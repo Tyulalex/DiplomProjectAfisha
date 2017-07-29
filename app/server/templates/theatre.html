@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %} Концерты {% endblock %}
+{% block title %} Сеансы {% endblock %}
 {% block head %}
 {{ super() }}
 {% endblock %}
 {% block content %}
 <div class="container">
-    <h1>{{concert_info.name}}</h1>
-    <p>{{concert_info.description}}</p>
-    <h3>Расписание</h3>
-     <form class="form-inline" action="/concert/{{concert_info.id}}" method="get" id="myform">
+    <h1>{{event_info.name}}</h1>
+    <p>{{event_info.description}}</p>
+    <h3>Расписание сеансов</h3>
+     <form class="form-inline" action="/theatre/{{event_info.id}}" method="get" id="myform">
         <div class="well">
            <form class="form-horizontal">
              <fieldset>
@@ -32,7 +32,7 @@
 
         <div class="form-group">
             <select name="time">
-                <option value="">Весь день</option>
+                <option value=""></option>
                 <option value="morning">Утро</option>
                 <option value="afternoon">День</option>
                 <option value="evening">Вечер</option>
@@ -44,7 +44,7 @@
                 data-source='{{metro_data_source_json}}'>
         </div>
         <div class="form-group">
-            <input type="text" name="place" data-provide="typeahead" placeholder="Концертная площадка" data-items="2"
+            <input type="text" name="place" data-provide="typeahead" placeholder="Кинотеатр" data-items="2"
                 data-source='{{place_data_source_json}}'>
         </div>
         <div class="form-group">
@@ -62,11 +62,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for concert in concert_schedule %}
+                {% for movie in movie_schedule %}
                   <tr class="active">
-                      <td>{{ concert.price_from }} - {{ concert.price_to }}</td>
-                      <td>{{ concert.date_start }}</td>
-                      <td>{{ concert.place.name }}, {{ concert.place.address }}, Ближайшее метро: {{ concert.place.metro_station.name }}</td>
+                      <td>{{ movie.price_from }} - {{ movie.price_to }}</td>
+                      <td>{{ movie.date_start }}</td>
+                      <td>{{ movie.place.name }}, {{ movie.place.address }}, Ближайшее метро: {{ movie.place.metro_station.name }}</td>
                   </tr>
                 {% endfor %}
             </tbody>

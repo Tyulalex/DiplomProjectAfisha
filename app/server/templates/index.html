@@ -1,61 +1,67 @@
-{% extends "navigation.html" %}
-
+{% extends "base.html" %}
+{% block title %}Ожидаемые события{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
 <div class="container">
-    <form class="form-inline" action="/" method="get" id="myform">
-        <fieldset>
-            <legend>Выберите данные:</legend>
-            <div class="form-group">
-            Город: <br>
+    <h1>Ожидаемые события</h1>
+    <div class="page-header">
+        <h2>Концерты</h2>
+        <div class="row">
+            {% for event in fresh_events[:3]%}
+            <div class="col-md-4">
+                <h3><a href="/concert/{{event.event.id}}">{{event.event.name}}</a></h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{event.event.description[:50]}}
+                    </div>
+                    <div class="col-md-6">
+                        Когда: {{event.date_start}}
+                        <br>Рейтинг ожидания: {{event.event.rating}}
+                        <br> Возрастное ограничение {{event.event.age_category.category}}
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-            <select name="city">
-                <option value="moscow">Москва</option>
-                <option value="saint-petersburg">Санкт-Петербург</option>
-                <option value="sochi">Сочи</option>
-            </select>
+            {% endfor %}
+        </div>
+         <h2>Спектакли</h2>
+        <div class="row">
+             {% for event in fresh_events[:3]%}
+            <div class="col-md-4">
+                <h3><a href="/theatre/{{event.event.id}}">{{event.event.name}}</a></h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{event.event.description[:50]}}
+                    </div>
+                    <div class="col-md-6">
+                        Когда: {{event.date_start}}
+                        <br>Рейтинг ожидания: {{event.event.rating}}
+                        <br> Возрастное ограничение {{event.event.age_category.category}}
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-             <p>Выберите дату:
-                <input type="date" name="calendar" value="2012-06-01"
-                    max="2019-06-04" min="2012-05-29"><br/>
-              </div>
-            <button type="submit" class="btn btn-info">Искать</button>
+            {% endfor %}
+        </div>
+         <h2>Фильмы</h2>
+        <div class="row">
+            {% for event in fresh_events[:3]%}
+            <div class="col-md-4">
+                <h3><a href="/movie/{{event.event.id}}">{{event.event.name}}</a></h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{event.event.description[:50]}}
+                    </div>
+                    <div class="col-md-6">
+                        Когда: {{event.date_start}}
+                        <br>Рейтинг ожидания: {{event.event.rating}}
+                        <br> Возрастное ограничение {{event.event.age_category.category}}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-        </fieldset>
-    </form>
 </div>
-
-<table id="eventsTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th>город</th>
-            <th>Название</th>
-            <th>Дата начала</th>
-            <th>Дата окончания</th>
-            <th>Место проведения</th>
-            <th>Цена мин</th>
-            <th>Цена макс</th>
-            <th>Возрастная категория</th>
-            <th>Описание</th>
-            <th>Рейтинг</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for element in data %}
-        <tr>
-            <td>{{element.get('city')}}</td>
-            <td>
-                <button type="button" class="btn btn-link">{{element.get('title')}}</button>
-            </td>
-            <td>{{element.get('date').get('from')}}</td>
-            <td>{{element.get('date').get('to')}}</td>
-            <td>{{element.get('location').get('address')}}</td>
-            <td>{{element.get('price_rub').get('from')}}</td>
-            <td>{{element.get('price_rub').get('to')}}</td>
-            <td>{{element.get('age_category')}}</td>
-            <td>{{element.get('description')}}</td>
-            <td>{{element.get('rating')}}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+{% endblock %}

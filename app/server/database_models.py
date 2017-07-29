@@ -19,6 +19,7 @@ class Place(db.Model):
     __table_args__ = (db.UniqueConstraint('name', 'address', name='_name_address_uc'),)
 
     place_type = db.relationship("PlaceType", backref='places')
+    metro_station = db.relationship("MetroStations", backref='places')
 
 
 class MetroStations(db.Model):
