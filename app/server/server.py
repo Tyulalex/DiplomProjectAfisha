@@ -86,6 +86,7 @@ def movies():
         event_list_to_json=json.dumps(distinct_event_list_names)
     )
 
+
 @app.route('/movie/<path:eventId>')
 def movie(eventId):
     date = request.args.get('date')
@@ -106,7 +107,7 @@ def theatres():
     dates = request.args.get('dates')
     station = request.args.get('station')
     place = request.args.get('place')
-    play_name = request.args.get('play')
+    play_name = request.args.get('event')
     kwargs = {'dates': dates, 'station': station, 'place': place, 'event': play_name}
     show_play_events = Events(event_type='Спектакль').get_list_of_events(db, **kwargs)
     distinct_event_list = []
@@ -121,6 +122,7 @@ def theatres():
         place_data_source_json=get_places_json_by_place_type(place_type='Театры'),
         event_list_to_json=json.dumps(distinct_event_list_names)
     )
+
 
 @app.route('/theatre/<path:eventId>')
 def theatre(eventId):

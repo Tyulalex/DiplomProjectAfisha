@@ -21,12 +21,6 @@ manager.add_command('db', MigrateCommand)
 migrate = Migrate(app, db)
 
 
-@manager.command
-def fill_db():
-    seed_catalogue()
-    seed()
-    seed_metro_stations()
-    seed_stations_id()
 
 
 @manager.command
