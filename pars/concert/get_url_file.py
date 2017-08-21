@@ -8,8 +8,8 @@ import concert_main_functions as main_func
 
 if __name__ == '__main__':
     #Получаем файлы с url. Аргумент это вид события: 1 - concert, 2 - theatre
-    main_func.get_events_url_file(1) # файл - concert_urls.txt
-    main_func.get_events_url_file(2) # файл - theatre_urls.txt
+    main_func.get_events_url_file(action_type_id=1) # файл - concert_urls.txt
+    main_func.get_events_url_file(action_type_id=2) # файл - theatre_urls.txt
 
 
     # #Получаем информацию с сайта. Для концертов и театров получается идентичная

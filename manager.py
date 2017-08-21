@@ -11,8 +11,8 @@ from app.server import create_app, db
 from app.server.database_models import Place, PlaceType, ShowEvent, Event, EventCategory, AgeCategory, MetroStations
 from lib.geo_parser import get_mos_metro_geo_data, get_coordinates_by_address
 import pars.concert.concert_main_functions as main_func
-import pars.ramblerkassa.general_function as gen_func
-import pars.ramblerkassa.special_function as spec_func
+import pars.ramblerkassa.main_info_func as gen_func
+import pars.ramblerkassa.special_info_func as spec_func
 
 
 app = create_app('default')
