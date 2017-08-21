@@ -11,11 +11,12 @@ def get_events_file(event):
 
 
 if __name__ == '__main__':
+    get_events_file('films')
     #получаем файлы с url
-    text = '1'
-    while text:
-        text = input('Enter type of event(films, concerts, theatres) or print exit\n> ')
-        if text != 'exit':
-            get_events_file(text)
-        else :
-            break
+    # text = '1'
+    # while text:
+    #     text = input('Enter type of event(films, concerts, theatres) or print exit\n> ')
+    #     if text != 'exit':
+    #         get_events_file(text)
+    #     else :
+    #         break
