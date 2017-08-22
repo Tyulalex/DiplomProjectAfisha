@@ -3,7 +3,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-import pars.ramblerkassa.special_info_func 
+import special_info_func 
 
 
 def get_url_params(event):
