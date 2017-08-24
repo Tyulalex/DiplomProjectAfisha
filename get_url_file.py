@@ -3,7 +3,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-import main_info_func as main_func
+import pars.ramblerkassa.main_info_func as main_func
 
 
 def get_events_file(event):
