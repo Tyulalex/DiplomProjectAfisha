@@ -136,7 +136,9 @@ def seed_theatres():
     with open('pars/concert/theatre_urls.txt', 'r') as f:
         for line in f:
             url = f.readline().strip()
-            if url:
+            bs = BeautifulSoup(main_func.fetch_content(url),\
+                 'html.parser')
+            if main_func.fetch_event_date(bs):
                 bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
                 theatres_dict = main_func.fetch_event_info(bs)
                 place_type_id = db.session.query(PlaceType). \
@@ -200,7 +202,9 @@ def seed_concerts():
     with open('pars/concert/concert_urls.txt', 'r') as f:
         for line in f:
             url = f.readline().strip()
-            if url:
+            bs = BeautifulSoup(main_func.fetch_content(url),\
+                 'html.parser')
+            if main_func.fetch_event_date(bs):
                 bs = BeautifulSoup(main_func.fetch_content(url),'html.parser')
                 theatres_dict = main_func.fetch_event_info(bs)
                 place_type_id = db.session.query(PlaceType). \
